@@ -14,7 +14,10 @@
         <v-card style="margin: 5px; padding: 5px; height: 50px; width: 85%; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center;">
           <div style="display: flex; flex-direction: row; align-items: center;">{{ booked_service.service_name }}</div>
           <div style="display: flex; flex-direction: row; align-items: center;">{{ booked_service.date }} {{ booked_service.time }}</div>
-          <div style="display: flex; flex-direction: row; align-items: center;"><v-btn @click="showMessage(booked_service.message)">SHOW MESSAGE</v-btn></div>
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <v-btn @click="showMessage(booked_service.message)">SHOW MESSAGE</v-btn>
+            <v-dialog v-model="dialog" max-width="500px"><v-card>{{ message }}</v-card></v-dialog>
+          </div>
           <div style="display: flex; flex-direction: row; align-items: center;">{{ booked_service.user_email }}</div>
           <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
             <v-btn @click="revokeBooking(booked_service)">REVOKE</v-btn>
@@ -115,7 +118,9 @@
         counts: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
         rules: [
           v => (!v || !isNaN(parseFloat(v))) || 'Input must be a number or empty'
-        ]
+        ],
+        dialog: false,
+        message: ''
       }
     },
     watch: {
@@ -197,6 +202,14 @@
           // console.log(response.data)
           this.initializeServices()
         }) 
+      },
+      showMessage(info) {
+        this.dialog = true
+        if (info === '' || info === null) {
+          this.message = 'Nothing provided.'
+        } else {
+          this.message = info
+        }
       }
     },
     mounted() {

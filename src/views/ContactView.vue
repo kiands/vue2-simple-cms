@@ -1,17 +1,20 @@
 <template>
   <v-container style="margin-top: 12px; margin-bottom: 12px">
     <v-row style="display_flex; flex-direction: column; alin-items: center">
-      <div
-        v-for="contact in contacts"
-        :key="contact.contact_id"
-      >
-        <v-card style="margin: 5px; padding: 3px; height: 40px; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
-          <div>{{ contact.contact_id }}</div>
-          <div>{{ contact.name }}</div>
-          <div>{{ contact.email }}</div>
-          <div>{{ contact.source }}</div>
-          <div>{{ contact.reason }}</div>
-          <div>{{ contact.additional_information }}</div>
+      <div>
+        <v-card style="margin: 5px; padding: 3px; height: 40px; display: grid; grid-template-columns: repeat(6, 1fr); align-items: center;"
+          v-for="contact in contacts"
+          :key="contact.contact_id"
+        >
+          <div>{{ "ID:" }} {{ contact.contact_id }}</div>
+          <div>{{ "Name:" }} {{ contact.name }}</div>
+          <div>{{ "Email:" }} {{ contact.email }}</div>
+          <div>{{ "Source:" }} {{ contact.source }}</div>
+          <div>{{ "Reason:" }} {{ contact.reason }}</div>
+          <div>
+            {{ "Additional Information:" }} <v-btn @click="showAdditionalInformation(contact.additional_information)">SHOW</v-btn>
+            <v-dialog v-model="dialog" max-width="500px"><v-card>{{ additional_information }}</v-card></v-dialog>
+          </div>
         </v-card>
       </div>
       <div class="text-center">
@@ -33,6 +36,8 @@
       return {
         length: 1,
         page: 1,
+        dialog: false,
+        additional_information: '',
         contacts: []
       }
     },
@@ -50,13 +55,20 @@
           this.contacts = response.data.contacts
         })
       },
-
       fetchContent(page) {
         // 这里是拉取内容的逻辑，你可以根据实际需求来实现，例如使用axios发送一个GET请求
         apiClient.get('your-api-url?page=' + page).then(response => {
           this.content = response.data
         })
       },
+      showAdditionalInformation(info) {
+        this.dialog = true
+        if (info === '' || info === null) {
+          this.additional_information = 'Nothing provided.'
+        } else {
+          this.additional_information = info
+        }
+      }
     },
     mounted() {
       this.initialize()
