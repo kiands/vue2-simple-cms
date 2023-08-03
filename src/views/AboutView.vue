@@ -7,7 +7,7 @@
         <v-expansion-panel
           v-for="(program, i) in programs"
           :key=i
-          @click="cancelImageChange()"
+          @click="cancelChanges()"
         >
           <v-expansion-panel-header>
             {{ i + 1 }}
@@ -26,9 +26,11 @@
             <div v-if="edit_program" style="width: 100%; display: flex; flex-direction: column;">
               <!--`action`: type of mutation; `api`: assign api dynamically; `code`: defines which group of images to change; `id`: only for edit by id, not for add.-->
               <!--图片编辑-->
-              <ImageChangeComponent :action="'edit'" :api="'cms/programs/'" :code="1" :id="program.program_id" @Submission="handleSubmission"/>
+              <ImageChangeComponent :action="'edit'" :code="1" :id="program.program_id" @Submission="handleSubmission"/>
               <!--内容编辑-->
+              <div>TITLE</div>
               <v-text-field v-model="current_program.title"></v-text-field>
+              <div>CONTENT</div>
               <v-text-field v-model="current_program.content"></v-text-field>
               <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
                 <v-btn @click="cancelChanges()">CANCEL</v-btn>
@@ -42,8 +44,10 @@
       </div>
       <div v-if="add_program" style="width: 100%; display: flex; flex-direction: column;">
         <!--No slash at the end of restful api for add.-->
-        <ImageChangeComponent :action="'add'" :api="'cms/programs'" :code="1" @Submission="handleSubmission"/>
+        <ImageChangeComponent :action="'add'" :code="1" @Submission="handleSubmission"/>
+        <div>TITIE</div>
         <v-text-field v-model="current_program.title"></v-text-field>
+        <div>CONTENT</div>
         <v-text-field v-model="current_program.content"></v-text-field>
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
           <v-btn @click="cancelChanges()">CANCEL</v-btn>
@@ -64,16 +68,66 @@
       return {
         add_program: false,
         edit_program: false,
-        programs: [ { program_id: 1, source: "http://127.0.0.1", link: "http://127.0.0.1", title: "p1", content: "c1" } ],
-        current_program: ''
+        programs: [],
+        current_program: { program_id: '', source: '', link: '', title: '', content: '' }
       };
     },
+    mounted() {
+      this.initializePrograms()
+    },
     methods: {
+      initializePrograms() {
+        apiClient.get("cms/programs").then(response => {
+          this.programs = response.data.programs
+          this.edit_program = false
+          this.add_program = false
+        })
+      },
       editProgram(program) {
         this.add_program = false
         this.edit_program = true
         this.current_program = program
       },
+      addProgram() {
+        this.add_program = true
+        this.edit_program = false
+        this.current_program = { program_id: '', source: '', link: '', title: '', content: '' }
+      },
+      cancelChanges() {
+        this.add_program = false
+        this.edit_program = false
+        this.current_program = { program_id: '', source: '', link: '', title: '', content: '' }
+      },
+      handleSubmission(payload) {
+        if ( payload.code === 1 && payload.action === 'add' ) {
+          apiClient.post('cms/programs', {
+            src: payload.src,
+            link: payload.link,
+            title: this.current_program.title,
+            content: this.current_program.content
+          }).then(response => {
+            this.initializePrograms()
+          })
+        } else if ( payload.code === 1 && payload.action === 'edit' ) {
+          apiClient.put('cms/programs/' + payload.id, {
+            src: payload.src,
+            link: payload.link,
+            title: this.current_program.title,
+            content: this.current_program.content
+          }).then(response => {
+            this.initializePrograms()
+          })
+        }
+      },
+      deleteProgram(program_id) {
+        apiClient.delete("cms/programs/" + program_id).then(response => {
+            console.log(response);
+            this.initializePrograms();
+        }).catch(error => {
+            console.log(error);
+            // 请求失败时，你可能想要做一些事情
+        });
+      }
     }
   }
 </script>
