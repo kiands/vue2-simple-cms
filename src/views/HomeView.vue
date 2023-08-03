@@ -23,7 +23,7 @@
             </div>
             <div v-if="edit_carousel" style="width: 100%; display: flex; flex-direction: column;">
               <!--`action`: type of mutation; `api`: assign api dynamically; `code`: defines which group of images to change; `id`: only for edit by id, not for add.-->
-              <ImageChangeComponent :action="'edit'" :api="'cms/carousels/'" :code="1" :id="carousel.image_id" @ImageStatusChange="handleImageStatusChange"/>
+              <ImageChangeComponent :action="'edit'" :api="'cms/carousels/'" :code="1" :id="carousel.image_id" @Submission="handleImageStatusChange"/>
               <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
                 <v-btn @click="cancelImageChange()">CANCEL</v-btn>
               </div>
@@ -36,7 +36,7 @@
       </div>
       <div v-if="add_carousel" style="width: 100%; display: flex; flex-direction: column;">
         <!--No slash at the end of restful api for add.-->
-        <ImageChangeComponent :action="'add'" :api="'cms/carousels'" :code="1" @ImageStatusChange="handleImageStatusChange"/>
+        <ImageChangeComponent :action="'add'" :api="'cms/carousels'" :code="1" @Submission="handleImageStatusChange"/>
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
           <v-btn @click="cancelImageChange()">CANCEL</v-btn>
         </div>

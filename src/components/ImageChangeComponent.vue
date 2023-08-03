@@ -1,16 +1,16 @@
 <template>
   <div style="margin-top: 12px; display: flex; flex-direction: column; justify-content: center;">
     <div>IMAGE LINK</div>
-    <v-text-field v-model="carousel_src"></v-text-field>
+    <v-text-field v-model="src"></v-text-field>
     <div>HYPERLINK</div>
-    <v-text-field v-model="carousel_link"></v-text-field>
+    <v-text-field v-model="link"></v-text-field>
     <div style="margin-top: 12px; margin-bottom: 12px; display: flex; flex-direction: row; justify-content: center;">
       <v-btn style="margin-right: 24px" @click="previewSRC()">PREVIEW</v-btn>
       <!--`action` is a property from parent.-->
-      <v-btn style="margin-right: 24px" @click="submitImageChange(action, api, code)">SUBMIT</v-btn>
+      <v-btn style="margin-right: 24px" @click="submitChanges(action, api, code)">SUBMIT</v-btn>
     </div>
-    <v-card v-if="preview_carousel">
-      <v-img :src=carousel_src></v-img>
+    <v-card v-if="preview_image">
+      <v-img :src=src></v-img>
     </v-card>
   </div>
 </template>
@@ -22,16 +22,16 @@
     props: ['action', 'api', 'code', 'id'],
     data() {
       return {
-        preview_carousel: false,
-        carousel_src: "",
-        carousel_link: "",
+        preview_image: false,
+        src: "",
+        link: "",
       };
     },
     methods: {
       previewSRC() {
-        this.preview_carousel = true;
+        this.preview_image = true;
       },
-      submitImageChange(action, api, code) {
+      submitChanges(action, api, code) {
         if (action === "edit") {
           /*
           for(let i = 0; i < this.carousels.length; i++) {
@@ -46,20 +46,20 @@
           }
           */
           apiClient.put(api + this.id, {
-            src: this.carousel_src,
-            link: this.carousel_link
+            src: this.src,
+            link: this.link
           }).then(response => {
-            this.$emit('ImageStatusChange', code)
+            this.$emit('Submission', code)
           }).catch(error => {
             console.log(error);
             // 请求失败时，你可能想要做一些事情
           });
         } else {
           apiClient.post(api, {
-            src: this.carousel_src,
-            link: this.carousel_link
+            src: this.src,
+            link: this.link
           }).then(response => {
-            this.$emit('ImageStatusChange', code)
+            this.$emit('Submission', code)
           }).catch(error => {
             console.log(error);
             // 请求失败时，你可能想要做一些事情
