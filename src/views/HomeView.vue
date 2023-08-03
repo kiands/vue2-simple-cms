@@ -23,7 +23,7 @@
             </div>
             <div v-if="edit_carousel" style="width: 100%; display: flex; flex-direction: column;">
               <!--`action`: type of mutation; `api`: assign api dynamically; `code`: defines which group of images to change; `id`: only for edit by id, not for add.-->
-              <ImageChangeComponent :action="'edit'" :api="'cms/carousels/'" :code="1" :id="carousel.image_id" @Submission="handleImageStatusChange"/>
+              <ImageChangeComponent :action="'edit'" :code="1" :id="carousel.image_id" @Submission="handleImageStatusChange"/>
               <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
                 <v-btn @click="cancelImageChange()">CANCEL</v-btn>
               </div>
@@ -36,7 +36,7 @@
       </div>
       <div v-if="add_carousel" style="width: 100%; display: flex; flex-direction: column;">
         <!--No slash at the end of restful api for add.-->
-        <ImageChangeComponent :action="'add'" :api="'cms/carousels'" :code="1" @Submission="handleImageStatusChange"/>
+        <ImageChangeComponent :action="'add'" :code="1" @Submission="handleImageStatusChange"/>
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
           <v-btn @click="cancelImageChange()">CANCEL</v-btn>
         </div>
@@ -65,7 +65,7 @@
             </div>
             <div v-if="edit_flyer" style="width: 100%; display: flex; flex-direction: column;">
               <!--`action`: type of mutation; `api`: assign api dynamically; `code`: defines which group of images to change; `id`: only for edit by id, not for add.-->
-              <ImageChangeComponent :action="'edit'" :api="'cms/flyers/'" :code="2" :id="flyer.image_id" @ImageStatusChange="handleImageStatusChange"/>
+              <ImageChangeComponent :action="'edit'" :code="2" :id="flyer.image_id" @Submission="handleImageStatusChange"/>
               <div style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
                 <v-btn @click="cancelImageChange()">CANCEL</v-btn>
               </div>
@@ -113,11 +113,28 @@
       // Binded with child component's this.$emit.
       // This val does not need to be defined manually.
       // `code` from child controls which initialize finction to call.
-      handleImageStatusChange(code) {
-        if ( code === 1 ) {
-          this.initializeCarousels()
-        } else if ( code === 2 ) {
-          this.initializeFlyers()
+      handleImageStatusChange(payload) {
+        if ( payload.code === 1 && payload.action === 'add' ) {
+          apiClient.post('cms/carousels', {
+            src: payload.src,
+            link: payload.link
+          }).then(response => {
+            this.initializeCarousels()
+          })
+        } else if ( payload.code === 1 && payload.action === 'edit' ) {
+          apiClient.put('cms/carousels/' + payload.id, {
+            src: payload.src,
+            link: payload.link
+          }).then(response => {
+            this.initializeCarousels()
+          })
+        } else if ( payload.code === 2 && payload.action === 'edit' ) {
+          apiClient.put('cms/flyers/' + payload.id, {
+            src: payload.src,
+            link: payload.link
+          }).then(response => {
+            this.initializeFlyers()
+          })
         }
       },
       addCarousel() {
