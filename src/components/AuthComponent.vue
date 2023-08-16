@@ -4,7 +4,9 @@
       v-if="!this.$store.state.auth.isLoggedIn"
       style="height: 100px; width: 200px; display: flex; flex-direction: column; justify-content: space-around;"
     >
-      <v-btn @click="GoogleOAuth">Login via Google</v-btn>
+      <v-text-field v-model="email"></v-text-field>
+      <v-text-field v-model="password"></v-text-field>
+      <v-btn @click="login()">LOG IN</v-btn>
     </div>
     <div>
       <!--div v-if="isLoggedIn"-->
@@ -27,6 +29,13 @@ export default {
   // mounted() {
   //   window.addEventListener('message', this.show, false)
   // },
+  data() {
+    return {
+      email: '',
+      password: ''
+    }
+  },
+
   methods: {
     // openGithub() {
     //   window.open('https://github.com/login/oauth/authorize?client_id=89450a7c608bbd0300d8')
@@ -67,6 +76,12 @@ export default {
         // 移除事件监听器
         window.removeEventListener('message', this);
       });
+    },
+
+    login() {
+      this.$store.dispatch(
+        'auth/login', { "email": this.email, "password": this.password }
+      )
     },
 
     // This component calls Vuex, Vuex uses the interceptor named apiClient

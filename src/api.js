@@ -12,15 +12,15 @@ const apiClient = axios.create({
 
 // 这个专用的axios实例是用来防止apiClient上设计的拦截器在需要刷新token时触发循环而设计的
 const refreshClient = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
-  // baseURL: "https://hzf.ngrok.dev/api/",
+  // baseURL: "http://127.0.0.1:8000/api/",
+  baseURL: "https://hzf.ngrok.dev/api/",
   headers: {
     "Content-Type": "application/json",
   },
 })
 
 // 豁免JWT token的URL列表
-const exemptedApiList = ['register', 'login', 'services', 'contact', 'contacts', 'carousels', 'cms']
+const exemptedApiList = ['register', 'login', 'services', 'contact', 'contacts', 'carousels']
 
 const isTokenExpired = (token) => {
   const decoded = jwtDecode(token)
